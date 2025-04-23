@@ -48,19 +48,51 @@ def get_all_breeds():
 def get_random_image(breed):
     """GET request to fetch a random image from a breed."""
     # TODO: Make a request to https://dog.ceo/api/breed/{breed}/images/random
-    # TODO: Return the image URL or handle errors
-    pass
+    # TODO: Return the image URL or handle 
+    try:
+        breed_url = f'https://dog.ceo/api/breed/{breed}/images/random'
+        response = requests.get(breed_url)
+        response.raise_for_status()
+        data = response.json() 
+        return data['message']
+    except request.exceptions.RequestException:
+        print(f'Error fetching image for breed {breed}')
+        return {}
+
 
 def get_random_sub_breed_image(breed, sub_breed):
     """GET request to fetch a random image from a sub-breed."""
     # TODO: Make a request to https://dog.ceo/api/breed/{breed}/{sub_breed}/images/random
     # TODO: Return the image URL or handle errors
-    pass
+    try:
+        sub_breed_url = f'https://dog.ceo/api/breed/{breed}/{sub_breed}/images/random'
+        response = requests.get(sub_breed_url)
+        response.raise_for_status()
+        data = response.json()
+        return data['message']
+    except request.exceptions.RequestException:
+        print(f'Error fetching image for sub breed {sub_breed}')
+        return {}
+
+
 
 def show_breeds(breeds_dict):
     """Prints all available breeds 5 per line."""
     # TODO: Print all breeds (sorted), 5 per line
-    pass
+    # all_breeds = []
+    # count = 0
+    # for breed in breeds_dict:
+    #     all_breeds.append(breed)
+    #     count += 1
+    #     if count == 5:
+    #         all_breeds = sorted(all_breeds)
+    #         print(f'{all_breeds[0]}, {all_breeds[1]}, {all_breeds[2]}, {all_breeds[3]}, {all_breeds[4]}')
+    #         all_breeds.clear()
+    #         count = 0
+    sorted_breeds = sorted(breeds_dict.keys())
+    for breed in range(0,len(sorted_breeds),5):
+        print(','.join(sorted_breeds[breed:breed+5]))
+
 
 def main():
     while True:
@@ -80,7 +112,14 @@ def main():
             breeds = get_all_breeds()
             breed = input("Enter breed name: ").strip().lower()
             # TODO: Check if breed exists and fetch image
+            breeds_dict = get_all_breeds()
+            if breed in breeds_dict:
+                url = get_random_image(breed)
+                print(f'Random image URL for {breed}: {url}')
             # TODO: Print image URL or error message
+            else:
+                print(f'Error: Breed not found.')
+
 
         elif choice == "3":
             breeds = get_all_breeds()
@@ -88,6 +127,16 @@ def main():
             # TODO: Check if breed has sub-breeds
             # TODO: Ask for sub-breed, check if valid, then fetch image
             # TODO: Print image URL or error message
+            if breed in breeds and breeds[breed]:
+                sub_breed = input("Enter sub-breed name: ").strip().lower()
+                if sub_breed in breeds[breed]:
+                    url = get_random_sub_breed_image(breed, sub_breed)
+                    print(f'Random image URL for {sub_breed}: {url}')
+            elif breed in breeds:
+                print(f'Error: Sub-breed not found.')
+            else:
+                print(f'Error: Breed does not exist.')
+
 
         elif choice == "4":
             print("Goodbye!")
@@ -98,3 +147,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+"""
+Sources:
+Thank you to Afsana in assistance for "show_breeds" & "elif choice == 3"
+"""
